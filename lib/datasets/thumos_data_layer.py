@@ -53,3 +53,41 @@ class TRNTHUMOSDataLayer(data.Dataset):
 
     def __len__(self):
         return len(self.inputs)
+
+class LSTMTHUMOSDataLayer(data.Dataset):
+    def __init__(self, args, phase='train'):
+        self.data_root = args.data_root
+        self.camera_feature = args.camera_feature
+        self.motion_feature = args.motion_feature
+        self.sessions = getattr(args, phase+'_session_set')
+        self.enc_steps = args.enc_steps
+        self.training = phase=='train'
+
+        self.inputs = []
+        for session in self.sessions:
+            target = np.load(osp.join(self.data_root, 'target', session+'.npy'))
+            seed = np.random.randint(self.enc_steps) if self.training else 0
+            for start, end in zip(
+                range(seed, target.shape[0], self.enc_steps),
+                range(seed + self.enc_steps, target.shape[0], self.enc_steps)):
+                enc_target = target[start:end]
+                self.inputs.append([
+                    session, start, end, enc_target,
+                ])
+
+
+    def __getitem__(self, index):
+        session, start, end, enc_target = self.inputs[index]
+
+        camera_inputs = np.load(
+            osp.join(self.data_root, self.camera_feature, session+'.npy'), mmap_mode='r')[start:end]
+        camera_inputs = torch.as_tensor(camera_inputs.astype(np.float32))
+        motion_inputs = np.load(
+            osp.join(self.data_root, self.motion_feature, session+'.npy'), mmap_mode='r')[start:end]
+        motion_inputs = torch.as_tensor(motion_inputs.astype(np.float32))
+        enc_target = torch.as_tensor(enc_target.astype(np.float32))
+
+        return camera_inputs, motion_inputs, enc_target
+
+    def __len__(self):
+        return len(self.inputs)

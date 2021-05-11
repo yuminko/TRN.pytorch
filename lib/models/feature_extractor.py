@@ -84,6 +84,7 @@ class THUMOSFeatureExtractor(nn.Module):
 _FEATURE_EXTRACTORS = {
     'HDD': HDDFeatureExtractor,
     'THUMOS': THUMOSFeatureExtractor,
+    'TVSeries': THUMOSFeatureExtractor
 }
 
 def build_feature_extractor(args):
