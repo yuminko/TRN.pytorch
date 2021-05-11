@@ -12,6 +12,35 @@ __all__ = [
     'compute_result',
 ]
 
+def calibrated_ap(label, predicted):
+
+    target_frame = np.stack([label, predicted], axis = 1)
+
+    # target_frame[:,1] : pred
+    # target_frame[:,0] : gt
+
+    num_frame = target_frame.shape[0]
+    target_frame = target_frame[target_frame[:,1].argsort()][::-1]
+
+    sum_prec = 0
+    total_positive = target_frame[:,0].sum()
+    num_positive = total_positive
+    num_negative = num_frame - num_positive
+    w = num_negative / num_positive
+
+    tp = 0.0
+    fp = 0.0
+
+    for k in range(0, num_frame):
+        if (target_frame[k,1] > 0.0):           # conf_threshold = 0.0 으로 둠
+            if (target_frame[k, 0] == 0):
+                fp += 1
+            if (target_frame[k,0] == 1):
+                tp += 1
+                sum_prec += w * tp / (w * tp + fp)
+    
+    return (sum_prec / total_positive)
+
 def compute_result_multilabel(dataset, class_index, score_metrics, target_metrics, save_dir, result_file,
                               ignore_class=[0], save=True, verbose=False, smooth=False, switch=False):
     result = OrderedDict()
@@ -62,9 +91,11 @@ def compute_result_multilabel(dataset, class_index, score_metrics, target_metric
         print('Dataset: ', dataset)
         for cls in range(len(class_index)):
             if cls not in ignore_class:
-                result['AP'][class_index[cls]] = average_precision_score(
-                    (target_metrics[:, cls]==1).astype(np.int),
-                    score_metrics[:, cls])
+                result['AP'][class_index[cls]] = calibrated_ap(
+                    (target_metrics[:, cls]==1).astype(np.int), score_metrics[:,cls])
+                # result['AP'][class_index[cls]] = average_precision_score(
+                #     (target_metrics[:, cls]==1).astype(np.int),
+                #     score_metrics[:, cls])
                 if verbose:
                     print('{} AP: {:.5f}'.format(class_index[cls], result['AP'][class_index[cls]]))
 
@@ -83,6 +114,8 @@ def compute_result_multilabel(dataset, class_index, score_metrics, target_metric
             print('Saved the result to {}'.format(osp.join(save_dir, result_file)))
 
     return result['mAP']
+
+
 
 def compute_result(class_index, score_metrics, target_metrics, save_dir, result_file,
                    ignore_class=[0], save=True, verbose=False):
