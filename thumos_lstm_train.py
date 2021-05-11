@@ -14,7 +14,12 @@ from models import build_model
 
 def main(args):
     this_dir = osp.join(osp.dirname(__file__), '.')
-    save_dir = osp.join(this_dir, 'tv_lstm_checkpoints_16')
+
+    if agrs.dataset == 'THUMOS':
+        save_dir = osp.join(this_dir, 'lstm_THUMOS_checkpoints')
+    elif args.dataset == 'TVSeries':
+        save_dir = osp.join(this_dir, 'lstm_TVSeries_checkpoints')
+
     if not osp.isdir(save_dir):
         os.makedirs(save_dir)
     command = 'python ' + ' '.join(sys.argv)

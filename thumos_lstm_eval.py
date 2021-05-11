@@ -62,9 +62,14 @@ def main(args):
     result_file  = osp.basename(args.checkpoint).replace('.pth', '.json')
     # Compute result for encoder
 
-    utl.compute_result_multilabel(args.dataset, args.class_index,
-                                  enc_score_metrics, enc_target_metrics,
-                                  save_dir, result_file, ignore_class=[0], save=True, verbose=True)
+    if args.dataset == "THUMOS":
+        utl.compute_result_multilabel(args.dataset, args.class_index,
+                                    enc_score_metrics, enc_target_metrics,
+                                    save_dir, result_file, ignore_class=[0,21], save=True, verbose=True)
+    elif args.dataset == "TVSeries":
+        utl.compute_result_multilabel(args.dataset, args.class_index,
+                                    enc_score_metrics, enc_target_metrics,
+                                    save_dir, result_file, ignore_class=[0], save=True, verbose=True)
 
 
 
