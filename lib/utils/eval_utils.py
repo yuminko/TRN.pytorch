@@ -12,7 +12,7 @@ __all__ = [
     'compute_result',
 ]
 
-def compute_result_multilabel(class_index, score_metrics, target_metrics, save_dir, result_file,
+def compute_result_multilabel(dataset, class_index, score_metrics, target_metrics, save_dir, result_file,
                               ignore_class=[0], save=True, verbose=False, smooth=False, switch=False):
     result = OrderedDict()
     score_metrics = np.array(score_metrics)
@@ -40,18 +40,33 @@ def compute_result_multilabel(class_index, score_metrics, target_metrics, save_d
         switch_index = np.where(score_metrics[:, 5] > score_metrics[:, 8])[0]
         score_metrics[switch_index, 8] = score_metrics[switch_index, 5]
 
+    if dataset == "THUMOS":
     # Remove ambiguous (21)
-    valid_index = np.where(target_metrics[:, 21]!=1)[0]
+        valid_index = np.where(target_metrics[:, 21]!=1)[0]   #THUMOS
+
 
     # Compute AP
     result['AP'] = OrderedDict()
-    for cls in range(len(class_index)):
-        if cls not in ignore_class:
-            result['AP'][class_index[cls]] = average_precision_score(
-                (target_metrics[valid_index, cls]==1).astype(np.int),
-                score_metrics[valid_index, cls])
+
+    if dataset == "THUMOS":
+        print('Dataset: ', dataset)
+        for cls in range(len(class_index)):
+            if cls not in ignore_class:
+                result['AP'][class_index[cls]] = average_precision_score(
+                    (target_metrics[valid_index, cls]==1).astype(np.int),
+                    score_metrics[valid_index, cls])
             if verbose:
-                print('{} AP: {:.5f}'.format(class_index[cls], result['AP'][class_index[cls]]))
+                print('{} AP: {:.5f}'.format(class_index[cls], result['AP'][class_index[cls]]))   
+ 
+    elif dataset == "TVSeries":
+        print('Dataset: ', dataset)
+        for cls in range(len(class_index)):
+            if cls not in ignore_class:
+                result['AP'][class_index[cls]] = average_precision_score(
+                    (target_metrics[:, cls]==1).astype(np.int),
+                    score_metrics[:, cls])
+                if verbose:
+                    print('{} AP: {:.5f}'.format(class_index[cls], result['AP'][class_index[cls]]))
 
     # Compute mAP
     result['mAP'] = np.mean(list(result['AP'].values()))

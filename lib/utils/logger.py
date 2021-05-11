@@ -27,6 +27,24 @@ class Logger(object):
         self._print(log)
         self._write(log)
 
+    def lstm_output(self, epoch, enc_losses, training_samples, testing_samples,
+               enc_mAP, running_time, debug=True, log=''):
+        log += 'Epoch: {:2} | train enc_loss: {:.5f} | '.format(
+            epoch,
+            enc_losses['train'] / training_samples,
+        )
+        log += 'test enc_loss: {:.5f}  enc_mAP: {:.5f}| '.format(
+            enc_losses['test'] / testing_samples,
+            enc_mAP,
+        ) if debug else ''
+        log += 'running time: {:.2f} sec'.format(
+            running_time,
+        )
+
+        self._print(log)
+        self._write(log)
+
+
     def _print(self, log):
         print(log)
 
