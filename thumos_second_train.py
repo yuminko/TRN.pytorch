@@ -9,16 +9,16 @@ import torch.optim as optim
 
 import _init_paths 
 import lib.utils as utl
-from configs.thumos import parse_lstm_args as parse_args
+from configs.thumos import parse_second_args as parse_args
 from models import build_model
 
 def main(args):
     this_dir = osp.join(osp.dirname(__file__), '.')
 
     if args.dataset == 'THUMOS':
-        save_dir = osp.join(this_dir, 'lstm_THUMOS_checkpoints')
+        save_dir = osp.join(this_dir, 'second_THUMOS_checkpoints')
     elif args.dataset == 'TVSeries':
-        save_dir = osp.join(this_dir, 'lstm_TVSeries_checkpoints')
+        save_dir = osp.join(this_dir, 'second_TVSeries_checkpoints')
 
     if not osp.isdir(save_dir):
         os.makedirs(save_dir)
@@ -128,7 +128,7 @@ def main(args):
                       enc_mAP,  end - start, debug=args.debug)
 
         # Save model
-        checkpoint_file = 'LSTM-inputs-{}-epoch-{}.pth'.format(args.inputs, epoch)
+        checkpoint_file = 'Second-inputs-{}-epoch-{}.pth'.format(args.inputs, epoch)
         torch.save({
             'epoch': epoch,
             'model_state_dict': model.module.state_dict() if args.distributed else model.state_dict(),

@@ -1,6 +1,6 @@
 from configs import parse_base_args, build_data_info
 
-__all__ = ['parse_trn_args', 'parse_lstm_args']
+__all__ = ['parse_trn_args', 'parse_lstm_args', 'parse_second_args']
 
 def parse_trn_args():
     parser = parse_base_args()
@@ -19,6 +19,17 @@ def parse_lstm_args():
     parser = parse_base_args()
     parser.add_argument('--data_root', default='/data/yumin/THUMOS', type=str)
     parser.add_argument('--model', default='LSTM', type=str)
+    parser.add_argument('--inputs', default='multistream', type=str)
+    parser.add_argument('--hidden_size', default=4096, type=int)
+    parser.add_argument('--camera_feature', default='resnet200-fc', type=str)
+    parser.add_argument('--motion_feature', default='bn_inception', type=str)
+    parser.add_argument('--enc_steps', default=16, type=int)
+    return build_data_info(parser.parse_args())
+
+def parse_second_args():
+    parser = parse_base_args()
+    parser.add_argument('--data_root', default='/data/yumin/THUMOS', type=str)
+    parser.add_argument('--model', default='Second', type=str)
     parser.add_argument('--inputs', default='multistream', type=str)
     parser.add_argument('--hidden_size', default=4096, type=int)
     parser.add_argument('--camera_feature', default='resnet200-fc', type=str)
