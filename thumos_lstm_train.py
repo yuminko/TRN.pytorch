@@ -87,6 +87,7 @@ def main(args):
                     enc_target = enc_target.to(device).view(-1, args.num_classes)
 
                     enc_score = model(camera_inputs, motion_inputs)
+                    print('enc_score shape', enc_score.shape)
                     enc_loss = criterion(enc_score, enc_target)
                     enc_losses[phase] += enc_loss.item() * batch_size
 

@@ -43,14 +43,22 @@ class baselineLSTM(nn.Module):
         enc_cx = camera_inputs.new_zeros((batch_size, self.hidden_size))
         score_stack = []
 
+        # print(enc_hx.shape)
+
         for enc_step in range(self.enc_steps):
             enc_hx, enc_cx, enc_score = self.encoder(
                 camera_inputs[:, enc_step],
                 sensor_inputs[:, enc_step], enc_hx, enc_cx,
             )
             score_stack.append(enc_score)
-        
+            # print(enc_score.shape)
+
+        # print(len(score_stack))
+
         scores = torch.stack(score_stack, dim=1).view(-1, self.num_classes)
+
+        print('lstm.py scores shape')
+        print(scores.shape)
 
         return scores
 

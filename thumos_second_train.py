@@ -40,7 +40,7 @@ def main(args):
     model = model.to(device)
 
     if args.dataset == 'THUMOS':
-        criterion = utl.MultiCrossEntropyLoss(ignore_index=21).to(device)
+        criterion = utl.MultiCrossEntropyLoss_Second(enc_steps= args.enc_steps, step_size= args.step_size, ignore_index=21).to(device)
     elif args.dataset == "TVSeries":
         criterion = utl.MultiCrossEntropyLoss().to(device)
 

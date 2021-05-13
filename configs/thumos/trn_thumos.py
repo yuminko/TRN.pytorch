@@ -23,7 +23,7 @@ def parse_lstm_args():
     parser.add_argument('--hidden_size', default=4096, type=int)
     parser.add_argument('--camera_feature', default='resnet200-fc', type=str)
     parser.add_argument('--motion_feature', default='bn_inception', type=str)
-    parser.add_argument('--enc_steps', default=16, type=int)
+    parser.add_argument('--enc_steps', default=64, type=int)
     return build_data_info(parser.parse_args())
 
 def parse_second_args():
@@ -34,5 +34,6 @@ def parse_second_args():
     parser.add_argument('--hidden_size', default=4096, type=int)
     parser.add_argument('--camera_feature', default='resnet200-fc', type=str)
     parser.add_argument('--motion_feature', default='bn_inception', type=str)
-    parser.add_argument('--enc_steps', default=16, type=int)
+    parser.add_argument('--enc_steps', default=64, type=int)
+    parser.add_argument('--step_size', default=1, type=int)
     return build_data_info(parser.parse_args())

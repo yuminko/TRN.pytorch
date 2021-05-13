@@ -1,0 +1,255 @@
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose --debug
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose --debug
+Epoch:  1 | train enc_loss: 1.35896 | test enc_loss: 1.21244  enc_mAP: 0.15747| running time: 101.60 sec
+Epoch:  2 | train enc_loss: 0.87016 | test enc_loss: 0.86741  enc_mAP: 0.33737| running time: 91.04 sec
+Epoch:  3 | train enc_loss: 0.64533 | test enc_loss: 0.78857  enc_mAP: 0.40294| running time: 91.59 sec
+Epoch:  4 | train enc_loss: 0.53648 | test enc_loss: 0.72760  enc_mAP: 0.42620| running time: 91.81 sec
+Epoch:  5 | train enc_loss: 0.49446 | test enc_loss: 0.83715  enc_mAP: 0.45067| running time: 91.90 sec
+Epoch:  6 | train enc_loss: 0.44269 | test enc_loss: 0.69578  enc_mAP: 0.47335| running time: 91.92 sec
+Epoch:  7 | train enc_loss: 0.42467 | test enc_loss: 0.69344  enc_mAP: 0.49205| running time: 91.81 sec
+Epoch:  8 | train enc_loss: 0.39410 | test enc_loss: 0.65338  enc_mAP: 0.48940| running time: 92.05 sec
+Epoch:  9 | train enc_loss: 0.36184 | test enc_loss: 0.70468  enc_mAP: 0.49809| running time: 92.38 sec
+Epoch: 10 | train enc_loss: 0.36512 | test enc_loss: 0.75794  enc_mAP: 0.51721| running time: 92.20 sec
+Epoch: 11 | train enc_loss: 0.35945 | test enc_loss: 0.66573  enc_mAP: 0.50958| running time: 90.65 sec
+Epoch: 12 | train enc_loss: 0.33036 | test enc_loss: 0.73833  enc_mAP: 0.50984| running time: 91.76 sec
+Epoch: 13 | train enc_loss: 0.31934 | test enc_loss: 0.70846  enc_mAP: 0.51610| running time: 91.79 sec
+Epoch: 14 | train enc_loss: 0.31624 | test enc_loss: 0.72491  enc_mAP: 0.52111| running time: 92.41 sec
+Epoch: 15 | train enc_loss: 0.31913 | test enc_loss: 0.67512  enc_mAP: 0.51694| running time: 91.91 sec
+Epoch: 16 | train enc_loss: 0.29651 | test enc_loss: 0.67358  enc_mAP: 0.52473| running time: 92.71 sec
+Epoch: 17 | train enc_loss: 0.28488 | test enc_loss: 0.72809  enc_mAP: 0.52888| running time: 91.74 sec
+Epoch: 18 | train enc_loss: 0.29951 | test enc_loss: 0.66900  enc_mAP: 0.52748| running time: 91.94 sec
+Epoch: 19 | train enc_loss: 0.28750 | test enc_loss: 0.69557  enc_mAP: 0.53358| running time: 91.76 sec
+Epoch: 20 | train enc_loss: 0.26392 | test enc_loss: 0.69634  enc_mAP: 0.53575| running time: 92.23 sec
+Epoch: 21 | train enc_loss: 0.21741 | test enc_loss: 0.65715  enc_mAP: 0.54694| running time: 92.69 sec
+python thumos_lstm_train.py --gpu 1,2,3 --distributed --verbose --debug
+python thumos_lstm_train.py --gpu 1,2,3 --distributed --verbose --debug
+python thumos_lstm_train.py --gpu 1,2,3 --distributed --verbose --debug
+python thumos_lstm_train.py --gpu 1,2,3 --distributed --verbose --debug
+python thumos_lstm_train.py --gpu 1,2,3 --distributed --verbose --debug
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+Epoch:  1 | train enc_loss: 1.35896 | running time: 72.09 sec
+Epoch:  2 | train enc_loss: 0.86765 | running time: 59.03 sec
+Epoch:  3 | train enc_loss: 0.64008 | running time: 59.46 sec
+Epoch:  4 | train enc_loss: 0.55381 | running time: 59.61 sec
+Epoch:  5 | train enc_loss: 0.49834 | running time: 59.03 sec
+Epoch:  6 | train enc_loss: 0.45309 | running time: 59.68 sec
+Epoch:  7 | train enc_loss: 0.41961 | running time: 59.65 sec
+Epoch:  8 | train enc_loss: 0.40381 | running time: 59.28 sec
+Epoch:  9 | train enc_loss: 0.37176 | running time: 59.82 sec
+Epoch: 10 | train enc_loss: 0.36405 | running time: 59.33 sec
+Epoch: 11 | train enc_loss: 0.35930 | running time: 58.88 sec
+Epoch: 12 | train enc_loss: 0.33194 | running time: 59.61 sec
+Epoch: 13 | train enc_loss: 0.32792 | running time: 60.36 sec
+Epoch: 14 | train enc_loss: 0.31490 | running time: 59.87 sec
+Epoch: 15 | train enc_loss: 0.29311 | running time: 59.29 sec
+Epoch: 16 | train enc_loss: 0.31178 | running time: 59.81 sec
+Epoch: 17 | train enc_loss: 0.28713 | running time: 59.62 sec
+Epoch: 18 | train enc_loss: 0.28661 | running time: 59.69 sec
+Epoch: 19 | train enc_loss: 0.27103 | running time: 59.64 sec
+Epoch: 20 | train enc_loss: 0.26424 | running time: 59.32 sec
+Epoch: 21 | train enc_loss: 0.21736 | running time: 59.78 sec
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+Epoch:  1 | train enc_loss: 0.93167 | running time: 165.41 sec
+Epoch:  2 | train enc_loss: 0.55790 | running time: 154.44 sec
+Epoch:  3 | train enc_loss: 0.46845 | running time: 155.13 sec
+Epoch:  4 | train enc_loss: 0.42426 | running time: 154.71 sec
+Epoch:  5 | train enc_loss: 0.39353 | running time: 154.71 sec
+Epoch:  6 | train enc_loss: 0.36986 | running time: 154.78 sec
+Epoch:  7 | train enc_loss: 0.35615 | running time: 154.90 sec
+Epoch:  8 | train enc_loss: 0.34068 | running time: 155.29 sec
+Epoch:  9 | train enc_loss: 0.32200 | running time: 154.97 sec
+Epoch: 10 | train enc_loss: 0.31986 | running time: 154.65 sec
+Epoch: 11 | train enc_loss: 0.29975 | running time: 155.12 sec
+Epoch: 12 | train enc_loss: 0.28804 | running time: 154.95 sec
+Epoch: 13 | train enc_loss: 0.28105 | running time: 154.74 sec
+Epoch: 14 | train enc_loss: 0.27461 | running time: 154.73 sec
+Epoch: 15 | train enc_loss: 0.25770 | running time: 154.52 sec
+Epoch: 16 | train enc_loss: 0.25826 | running time: 154.95 sec
+Epoch: 17 | train enc_loss: 0.25073 | running time: 155.28 sec
+Epoch: 18 | train enc_loss: 0.24148 | running time: 155.14 sec
+Epoch: 19 | train enc_loss: 0.22792 | running time: 155.17 sec
+Epoch: 20 | train enc_loss: 0.22743 | running time: 154.85 sec
+Epoch: 21 | train enc_loss: 0.17137 | running time: 155.15 sec
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+Epoch:  1 | train enc_loss: 0.93167 | running time: 165.73 sec
+Epoch:  2 | train enc_loss: 0.55790 | running time: 154.28 sec
+Epoch:  3 | train enc_loss: 0.46845 | running time: 155.19 sec
+Epoch:  4 | train enc_loss: 0.42426 | running time: 154.78 sec
+Epoch:  5 | train enc_loss: 0.39353 | running time: 154.78 sec
+Epoch:  6 | train enc_loss: 0.36986 | running time: 154.66 sec
+Epoch:  7 | train enc_loss: 0.35615 | running time: 154.50 sec
+Epoch:  8 | train enc_loss: 0.34068 | running time: 155.39 sec
+Epoch:  9 | train enc_loss: 0.32200 | running time: 154.55 sec
+Epoch: 10 | train enc_loss: 0.31986 | running time: 154.83 sec
+Epoch: 11 | train enc_loss: 0.29975 | running time: 154.78 sec
+Epoch: 12 | train enc_loss: 0.28804 | running time: 154.68 sec
+Epoch: 13 | train enc_loss: 0.28105 | running time: 154.37 sec
+Epoch: 14 | train enc_loss: 0.27461 | running time: 154.60 sec
+Epoch: 15 | train enc_loss: 0.25770 | running time: 154.75 sec
+Epoch: 16 | train enc_loss: 0.25826 | running time: 154.68 sec
+Epoch: 17 | train enc_loss: 0.25073 | running time: 155.08 sec
+Epoch: 18 | train enc_loss: 0.24148 | running time: 154.50 sec
+Epoch: 19 | train enc_loss: 0.22792 | running time: 155.16 sec
+Epoch: 20 | train enc_loss: 0.22743 | running time: 154.59 sec
+Epoch: 21 | train enc_loss: 0.17137 | running time: 155.12 sec
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+Epoch:  1 | train enc_loss: 0.93167 | running time: 165.61 sec
+Epoch:  2 | train enc_loss: 0.55790 | running time: 154.24 sec
+Epoch:  3 | train enc_loss: 0.46845 | running time: 154.96 sec
+Epoch:  4 | train enc_loss: 0.42426 | running time: 154.84 sec
+Epoch:  5 | train enc_loss: 0.39353 | running time: 155.05 sec
+Epoch:  6 | train enc_loss: 0.36986 | running time: 155.04 sec
+Epoch:  7 | train enc_loss: 0.35615 | running time: 154.99 sec
+Epoch:  8 | train enc_loss: 0.34068 | running time: 155.41 sec
+Epoch:  9 | train enc_loss: 0.32200 | running time: 155.00 sec
+Epoch: 10 | train enc_loss: 0.31986 | running time: 154.89 sec
+Epoch: 11 | train enc_loss: 0.29975 | running time: 155.42 sec
+Epoch: 12 | train enc_loss: 0.28804 | running time: 154.92 sec
+Epoch: 13 | train enc_loss: 0.28105 | running time: 154.87 sec
+Epoch: 14 | train enc_loss: 0.27461 | running time: 154.95 sec
+Epoch: 15 | train enc_loss: 0.25770 | running time: 155.15 sec
+Epoch: 16 | train enc_loss: 0.25826 | running time: 154.87 sec
+Epoch: 17 | train enc_loss: 0.25073 | running time: 155.28 sec
+Epoch: 18 | train enc_loss: 0.24148 | running time: 154.88 sec
+Epoch: 19 | train enc_loss: 0.22792 | running time: 155.34 sec
+Epoch: 20 | train enc_loss: 0.22743 | running time: 154.84 sec
+Epoch: 21 | train enc_loss: 0.17137 | running time: 155.19 sec
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+Epoch:  1 | train enc_loss: 1.13504 | running time: 157.61 sec
+Epoch:  2 | train enc_loss: 0.97615 | running time: 147.17 sec
+Epoch:  3 | train enc_loss: 0.91939 | running time: 147.45 sec
+Epoch:  4 | train enc_loss: 0.88349 | running time: 147.58 sec
+Epoch:  5 | train enc_loss: 0.84862 | running time: 147.38 sec
+Epoch:  6 | train enc_loss: 0.82476 | running time: 147.45 sec
+Epoch:  7 | train enc_loss: 0.80948 | running time: 147.59 sec
+Epoch:  8 | train enc_loss: 0.78579 | running time: 147.60 sec
+Epoch:  9 | train enc_loss: 0.76647 | running time: 147.62 sec
+Epoch: 10 | train enc_loss: 0.74739 | running time: 147.60 sec
+Epoch: 11 | train enc_loss: 0.73435 | running time: 147.51 sec
+Epoch: 12 | train enc_loss: 0.71686 | running time: 147.62 sec
+Epoch: 13 | train enc_loss: 0.69201 | running time: 147.64 sec
+Epoch: 14 | train enc_loss: 0.67838 | running time: 147.71 sec
+Epoch: 15 | train enc_loss: 0.66629 | running time: 147.58 sec
+Epoch: 16 | train enc_loss: 0.64573 | running time: 147.72 sec
+Epoch: 17 | train enc_loss: 0.63057 | running time: 147.61 sec
+Epoch: 18 | train enc_loss: 0.61055 | running time: 147.80 sec
+Epoch: 19 | train enc_loss: 0.59274 | running time: 147.56 sec
+Epoch: 20 | train enc_loss: 0.58059 | running time: 147.64 sec
+Epoch: 21 | train enc_loss: 0.49849 | running time: 147.34 sec
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+Epoch:  1 | train enc_loss: 1.13982 | running time: 157.52 sec
+Epoch:  2 | train enc_loss: 0.98035 | running time: 147.34 sec
+Epoch:  3 | train enc_loss: 0.92476 | running time: 147.48 sec
+Epoch:  4 | train enc_loss: 0.88904 | running time: 147.62 sec
+Epoch:  5 | train enc_loss: 0.85578 | running time: 147.55 sec
+Epoch:  6 | train enc_loss: 0.83304 | running time: 147.31 sec
+Epoch:  7 | train enc_loss: 0.81586 | running time: 147.26 sec
+Epoch:  8 | train enc_loss: 0.79227 | running time: 147.66 sec
+Epoch:  9 | train enc_loss: 0.77273 | running time: 147.37 sec
+Epoch: 10 | train enc_loss: 0.75321 | running time: 147.59 sec
+Epoch: 11 | train enc_loss: 0.73923 | running time: 147.61 sec
+Epoch: 12 | train enc_loss: 0.72126 | running time: 147.38 sec
+Epoch: 13 | train enc_loss: 0.69634 | running time: 147.25 sec
+Epoch: 14 | train enc_loss: 0.68362 | running time: 147.27 sec
+Epoch: 15 | train enc_loss: 0.67294 | running time: 147.33 sec
+Epoch: 16 | train enc_loss: 0.65061 | running time: 147.42 sec
+Epoch: 17 | train enc_loss: 0.63697 | running time: 147.33 sec
+Epoch: 18 | train enc_loss: 0.62156 | running time: 147.46 sec
+Epoch: 19 | train enc_loss: 0.60072 | running time: 147.40 sec
+Epoch: 20 | train enc_loss: 0.58746 | running time: 147.35 sec
+Epoch: 21 | train enc_loss: 0.50486 | running time: 147.38 sec
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+Epoch:  1 | train enc_loss: 1.13982 | running time: 157.63 sec
+Epoch:  2 | train enc_loss: 0.98035 | running time: 150.90 sec
+Epoch:  3 | train enc_loss: 0.92476 | running time: 159.45 sec
+Epoch:  4 | train enc_loss: 0.88904 | running time: 155.52 sec
+Epoch:  5 | train enc_loss: 0.85578 | running time: 159.98 sec
+Epoch:  6 | train enc_loss: 0.83304 | running time: 150.81 sec
+Epoch:  7 | train enc_loss: 0.81586 | running time: 152.63 sec
+Epoch:  8 | train enc_loss: 0.79227 | running time: 160.10 sec
+Epoch:  9 | train enc_loss: 0.77273 | running time: 150.30 sec
+Epoch: 10 | train enc_loss: 0.75321 | running time: 147.44 sec
+Epoch: 11 | train enc_loss: 0.73923 | running time: 155.10 sec
+Epoch: 12 | train enc_loss: 0.72126 | running time: 153.58 sec
+Epoch: 13 | train enc_loss: 0.69634 | running time: 151.30 sec
+Epoch: 14 | train enc_loss: 0.68362 | running time: 153.96 sec
+Epoch: 15 | train enc_loss: 0.67294 | running time: 156.71 sec
+Epoch: 16 | train enc_loss: 0.65061 | running time: 147.85 sec
+Epoch: 17 | train enc_loss: 0.63697 | running time: 147.73 sec
+Epoch: 18 | train enc_loss: 0.62156 | running time: 147.59 sec
+Epoch: 19 | train enc_loss: 0.60072 | running time: 156.50 sec
+Epoch: 20 | train enc_loss: 0.58746 | running time: 147.51 sec
+Epoch: 21 | train enc_loss: 0.50486 | running time: 150.74 sec
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_second_train.py --gpu 0,1,2,3 --distributed --verbose
+Epoch:  1 | train enc_loss: 0.93877 | running time: 232.41 sec
+Epoch:  2 | train enc_loss: 0.56716 | running time: 216.20 sec
+Epoch:  3 | train enc_loss: 0.47199 | running time: 218.18 sec
+Epoch:  4 | train enc_loss: 0.42666 | running time: 218.46 sec
+Epoch:  5 | train enc_loss: 0.40147 | running time: 211.42 sec
+Epoch:  6 | train enc_loss: 0.37441 | running time: 219.84 sec
+Epoch:  7 | train enc_loss: 0.36070 | running time: 211.60 sec
+Epoch:  8 | train enc_loss: 0.34610 | running time: 177.06 sec
+Epoch:  9 | train enc_loss: 0.32746 | running time: 211.94 sec
+Epoch: 10 | train enc_loss: 0.32370 | running time: 214.16 sec
+Epoch: 11 | train enc_loss: 0.30423 | running time: 215.49 sec
+Epoch: 12 | train enc_loss: 0.28920 | running time: 214.89 sec
+Epoch: 13 | train enc_loss: 0.28668 | running time: 211.94 sec
+Epoch: 14 | train enc_loss: 0.27753 | running time: 211.19 sec
+Epoch: 15 | train enc_loss: 0.26303 | running time: 211.55 sec
+Epoch: 16 | train enc_loss: 0.26311 | running time: 213.01 sec
+Epoch: 17 | train enc_loss: 0.25060 | running time: 217.58 sec
+Epoch: 18 | train enc_loss: 0.24548 | running time: 217.33 sec
+Epoch: 19 | train enc_loss: 0.23644 | running time: 219.23 sec
+Epoch: 20 | train enc_loss: 0.23227 | running time: 184.04 sec
+Epoch: 21 | train enc_loss: 0.17224 | running time: 213.10 sec
+python thumos_second_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_second_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_second_train.py --gpu 0,1,2,3 --distributed --verbose
+Epoch:  1 | train enc_loss: 0.93877 | running time: 223.77 sec
+Epoch:  2 | train enc_loss: 0.56716 | running time: 215.42 sec
+Epoch:  3 | train enc_loss: 0.47199 | running time: 210.67 sec
+Epoch:  4 | train enc_loss: 0.42666 | running time: 217.76 sec
+Epoch:  5 | train enc_loss: 0.40147 | running time: 215.67 sec
+Epoch:  6 | train enc_loss: 0.37441 | running time: 209.84 sec
+Epoch:  7 | train enc_loss: 0.36070 | running time: 218.18 sec
+Epoch:  8 | train enc_loss: 0.34610 | running time: 217.29 sec
+Epoch:  9 | train enc_loss: 0.32746 | running time: 187.54 sec
+Epoch: 10 | train enc_loss: 0.32370 | running time: 219.55 sec
+Epoch: 11 | train enc_loss: 0.30423 | running time: 214.99 sec
+Epoch: 12 | train enc_loss: 0.28920 | running time: 210.37 sec
+Epoch: 13 | train enc_loss: 0.28668 | running time: 214.00 sec
+Epoch: 14 | train enc_loss: 0.27753 | running time: 212.00 sec
+Epoch: 15 | train enc_loss: 0.26303 | running time: 217.16 sec
+Epoch: 16 | train enc_loss: 0.26311 | running time: 216.61 sec
+Epoch: 17 | train enc_loss: 0.25060 | running time: 217.41 sec
+Epoch: 18 | train enc_loss: 0.24548 | running time: 214.28 sec
+Epoch: 19 | train enc_loss: 0.23644 | running time: 215.40 sec
+Epoch: 20 | train enc_loss: 0.23227 | running time: 197.54 sec
+Epoch: 21 | train enc_loss: 0.17224 | running time: 206.55 sec
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --distributed --verbose
+python thumos_lstm_train.py --gpu 0,1,2,3 --verbose
+python thumos_second_train.py --gpu 0,1,2,3 --verbose
+python thumos_second_train.py --gpu 0,1,2,3 --verbose
+python thumos_second_train.py --gpu 0,1,2,3 --verbose
+python thumos_second_train.py --gpu 0,1,2,3 --verbose
+python thumos_second_train.py --gpu 0,1,2,3 --verbose
+python thumos_second_train.py --gpu 0,1,2,3 --verbose
