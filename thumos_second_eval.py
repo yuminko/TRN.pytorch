@@ -45,15 +45,19 @@ def main(args):
             enc_cx = to_device(torch.zeros(model.hidden_size), device)
 
             for l in range(target.shape[0]):
-                camera_input = to_device(
-                    torch.as_tensor(camera_inputs[l].astype(np.float32)), device)
-                motion_input = to_device(
-                    torch.as_tensor(motion_inputs[l].astype(np.float32)), device)
+                if l < args.step_size:
+                    enc_score_metrics.append(background_score)
+                else:
+                    camera_input = to_device(
+                        torch.as_tensor(camera_inputs[l-args.step_size].astype(np.float32)), device)
+                    motion_input = to_device(
+                        torch.as_tensor(motion_inputs[l-args.step_size].astype(np.float32)), device)
 
-                enc_hx, enc_cx, enc_score = \
-                        model.step(camera_input, motion_input, enc_hx, enc_cx)
+                    enc_hx, enc_cx, enc_score = \
+                            model.step(camera_input, motion_input, enc_hx, enc_cx)
 
-                enc_score_metrics.append(softmax(enc_score).cpu().numpy()[0])
+                    enc_score_metrics.append(softmax(enc_score).cpu().numpy()[0])
+
                 enc_target_metrics.append(target[l])
 
         end = time.time()
