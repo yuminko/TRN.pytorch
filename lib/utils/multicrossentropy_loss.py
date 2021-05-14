@@ -45,8 +45,8 @@ class MultiCrossEntropyLoss_Second(nn.Module):
             notice_index = [i for i in range(target.shape[-1]) if i != self.ignore_index]
             start = int(self.step_size * self.size)
 
-            print(start)
-            print(input[start::, notice_index].shape)
+            # print(start)
+            # print(input[start::, notice_index].shape)
             
             output = torch.sum(-target[start::, notice_index] * logsoftmax(input[start::, notice_index]), 1)
             return torch.mean(output[target[start::, self.ignore_index] != 1])

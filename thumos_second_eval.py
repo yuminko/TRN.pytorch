@@ -32,6 +32,9 @@ def main(args):
 
     softmax = nn.Softmax(dim=1).to(device)
 
+    background_score = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
     for session_idx, session in enumerate(args.test_session_set, start=1):
         start = time.time()
         with torch.set_grad_enabled(False):

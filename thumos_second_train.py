@@ -16,7 +16,7 @@ def main(args):
     this_dir = osp.join(osp.dirname(__file__), '.')
 
     if args.dataset == 'THUMOS':
-        save_dir = osp.join(this_dir, 'second_THUMOS_checkpoints')
+        save_dir = osp.join(this_dir, 'second_THUMOS_checkpoints_step5')
     elif args.dataset == 'TVSeries':
         save_dir = osp.join(this_dir, 'second_TVSeries_checkpoints')
 
@@ -110,7 +110,7 @@ def main(args):
         end = time.time()
 
         if args.debug:
-            result_file = 'LSTM-inputs-{}-epoch-{}.json'.format(args.inputs, epoch)
+            result_file = 'LSTM-step_size-{}-inputs-{}-epoch-{}.json'.format(args.step_size, args.inputs, epoch)
             # Compute result for encoder
             enc_mAP = utl.compute_result_multilabel(
                 args.class_index,
@@ -128,7 +128,7 @@ def main(args):
                       enc_mAP,  end - start, debug=args.debug)
 
         # Save model
-        checkpoint_file = 'Second-inputs-{}-epoch-{}.pth'.format(args.inputs, epoch)
+        checkpoint_file = 'Second-step_size-{}-inputs-{}-epoch-{}.pth'.format(args.step_size, args.inputs, epoch)
         torch.save({
             'epoch': epoch,
             'model_state_dict': model.module.state_dict() if args.distributed else model.state_dict(),
