@@ -16,7 +16,7 @@ def main(args):
     this_dir = osp.join(osp.dirname(__file__), '.')
 
     if args.dataset == 'THUMOS':
-        save_dir = osp.join(this_dir, 'second_THUMOS_checkpoints_step5')
+        save_dir = osp.join(this_dir, 'second_THUMOS_checkpoints_step1')
     elif args.dataset == 'TVSeries':
         save_dir = osp.join(this_dir, 'second_TVSeries_checkpoints')
 
@@ -40,7 +40,7 @@ def main(args):
     model = model.to(device)
 
     if args.dataset == 'THUMOS':
-        criterion = utl.MultiCrossEntropyLoss_Second(enc_steps= args.enc_steps, step_size= args.step_size, ignore_index=21).to(device)
+        criterion = utl.MultiCrossEntropyLoss_Second(batch_size= args.batch_size, step_size= args.step_size, num_class=args.num_classes, ignore_index=21).to(device)
     elif args.dataset == "TVSeries":
         criterion = utl.MultiCrossEntropyLoss().to(device)
 
@@ -84,10 +84,16 @@ def main(args):
                     batch_size = camera_inputs.shape[0]
                     camera_inputs = camera_inputs.to(device)
                     motion_inputs = motion_inputs.to(device)
-                    enc_target = enc_target.to(device).view(-1, args.num_classes)
 
-                    enc_score = model(camera_inputs, motion_inputs)
-                    enc_loss = criterion(enc_score, enc_target)
+                    extend_target = enc_target.to(device)
+
+
+                    enc_target = enc_target.to(device).view(-1, args.num_classes)
+               
+
+                    enc_score, extend_score = model(camera_inputs, motion_inputs)
+                    enc_loss = criterion(extend_score, extend_target)
+                    # enc_loss = criterion(enc_score, enc_target)
                     enc_losses[phase] += enc_loss.item() * batch_size
 
                     if args.verbose:

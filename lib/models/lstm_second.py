@@ -59,8 +59,18 @@ class SecondLSTM(nn.Module):
         for step in range(self.step_size):
             del score_stack[-1]
 
-        scores = torch.stack(score_stack, dim=1).view(-1, self.num_classes)
+        # print('score-Stack')
+        # print(len(score_stack))
+        # print(score_stack[0].shape)
 
-        return scores
+        scores = torch.stack(score_stack, dim=1).view(-1, self.num_classes)
+        extend_scores = torch.stack(score_stack, dim=1).view(-1,self.enc_steps, self.num_classes)
+
+        # print('scroes')
+        # print(scores.shape)
+        # print('extended')
+        # print(extend_scores.shape)
+
+        return scores, extend_scores
 
         

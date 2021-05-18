@@ -41,6 +41,9 @@ def main(args):
             enc_hx = to_device(torch.zeros(model.hidden_size), device)
             enc_cx = to_device(torch.zeros(model.hidden_size), device)
 
+
+            # print(target.shape[0])
+            # 
             for l in range(target.shape[0]):
                 camera_input = to_device(
                     torch.as_tensor(camera_inputs[l].astype(np.float32)), device)
@@ -51,6 +54,8 @@ def main(args):
                         model.step(camera_input, motion_input, enc_hx, enc_cx)
 
                 enc_score_metrics.append(softmax(enc_score).cpu().numpy()[0])
+                # print(softmax(enc_score).cpu().numpy()[0])
+                # print(type(softmax(enc_score).cpu().numpy()[0]))
                 enc_target_metrics.append(target[l])
 
         end = time.time()
