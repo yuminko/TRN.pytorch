@@ -16,7 +16,7 @@ def main(args):
     this_dir = osp.join(osp.dirname(__file__), '.')
 
     if args.dataset == 'THUMOS':
-        save_dir = osp.join(this_dir, 'second_THUMOS_checkpoints_step1')
+        save_dir = osp.join(this_dir, 'second_THUMOS_checkpoints_step{}'.format(args.step_size))
     elif args.dataset == 'TVSeries':
         save_dir = osp.join(this_dir, 'second_TVSeries_checkpoints')
 
@@ -40,9 +40,9 @@ def main(args):
     model = model.to(device)
 
     if args.dataset == 'THUMOS':
-        criterion = utl.MultiCrossEntropyLoss_Second(batch_size= args.batch_size, step_size= args.step_size, num_class=args.num_classes, ignore_index=21).to(device)
+        criterion = utl.MultiCrossEntropyLoss_Second(step_size= args.step_size, num_class=args.num_classes, ignore_index=21).to(device)
     elif args.dataset == "TVSeries":
-        criterion = utl.MultiCrossEntropyLoss().to(device)
+        criterion = utl.MultiCrossEntropyLoss_Second().to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     if osp.isfile(args.checkpoint):

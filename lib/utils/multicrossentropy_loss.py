@@ -27,19 +27,17 @@ class MultiCrossEntropyLoss(nn.Module):
                 return torch.sum(output)
 
 class MultiCrossEntropyLoss_Second(nn.Module):
-    def __init__(self, batch_size, step_size, num_class, size_average=True, ignore_index=-500):
+    def __init__(self, step_size, num_class, size_average=True, ignore_index=-500):
         super(MultiCrossEntropyLoss_Second, self).__init__()
 
         self.size_average = size_average
         self.ignore_index = ignore_index
 
-        self.size = batch_size
         self.step_size = step_size
         self.num_class = num_class
         
     def forward(self, input, target):
 
-        size = self.size
         step = self.step_size
         num_class = self.num_class
 

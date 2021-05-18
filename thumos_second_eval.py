@@ -18,6 +18,7 @@ def to_device(x, device):
 def main(args):
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    utl.set_seed(int(args.seed))
 
     enc_score_metrics = []
     enc_target_metrics = []
@@ -29,6 +30,7 @@ def main(args):
     model = build_model(args).to(device)
     model.load_state_dict(checkpoint['model_state_dict'])
     model.train(False)
+
 
     softmax = nn.Softmax(dim=1).to(device)
 
