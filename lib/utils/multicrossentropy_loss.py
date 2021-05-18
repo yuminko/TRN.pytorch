@@ -12,17 +12,11 @@ class MultiCrossEntropyLoss(nn.Module):
 
     def forward(self, input, target):
         logsoftmax = nn.LogSoftmax(dim=1).to(input.device)
-        # print(input.shape)
 
         if self.ignore_index >= 0:
             notice_index = [i for i in range(target.shape[-1]) if i != self.ignore_index]
-            # print(input[:, notice_index].shape)
-            # print(target[:, notice_index].shape)
+ 
             output = torch.sum(-target[:, notice_index] * logsoftmax(input[:, notice_index]), 1)
-
-            # print(output[target[:, self.ignore_index] != 1])
-            # print(output[target[:, self.ignore_index] != 1].shape)
-            # print([target[:, self.ignore_index] != 1])
 
             return torch.mean(output[target[:, self.ignore_index] != 1])
         else:
@@ -52,47 +46,25 @@ class MultiCrossEntropyLoss_Second(nn.Module):
         step_target = []
         step_input = []
 
+        step_target.append(target[:, step::, :])
+        step_input.append(input[:, step::, :])
+
+        step_target = torch.stack(step_target, dim=1).view(-1,num_class)
+        step_input = torch.stack(step_input, dim=1).view(-1, num_class)
+
+        logsoftmax = nn.LogSoftmax(dim=1).to(step_input.device)
+
         if self.ignore_index >= 0:
             notice_index = [i for i in range(target.shape[-1]) if i != self.ignore_index]
-
-            # print(target.shape)
-            # print(input.shape)
-
-            for i in range(target.shape[0]):
-                step_target.append(target[i, step::, :])
-                step_input.append(input[i, step::, :])
-
-
-            step_target = torch.stack(step_target, dim=1).view(-1,num_class)
-            step_input = torch.stack(step_input, dim=1).view(-1, num_class)
-
-            logsoftmax = nn.LogSoftmax(dim=1).to(step_input.device)
 
             output = torch.sum(-step_target[:,notice_index] * logsoftmax(step_input[:,notice_index]),1)
 
             return torch.mean(output[step_target[:,self.ignore_index] != 1])
 
-    # def forward(self, input, target):
-    #     logsoftmax = nn.LogSoftmax(dim=1).to(input.device)
+        else:
+            output = torch.sum(-step_target * logsoftmax(step_input), 1)
+            if self.size_average:
+                return torch.mean(output)
+            else:
+                return torch.sum(output)
 
-    #     if self.ignore_index >= 0:
-    #         notice_index = [i for i in range(target.shape[-1]) if i != self.ignore_index]
-
-    #         step = self.step_size
-
-    #         output = -target[:, step:: , notice_index] * logsoftmax(input[:, step::, notice_index])
-    #         output = output.view(-1, len(notice_index))
-    #         output = torch.sum(output, 1)
-
-    #         # output = torch.sum(-target[:, notice_index] * logsoftmax(input[:, notice_index]), 1)
-
-    #         index = target[:, step::, self.ignore_index] != 1
-    #         index = index.reshape(-1)
-
-    #         return torch.mean(output[index])
-    #     else:
-    #         output = torch.sum(-target * logsoftmax(input), 1)
-    #         if self.size_average:
-    #             return torch.mean(output)
-    #         else:
-    #             return torch.sum(output)
