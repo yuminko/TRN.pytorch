@@ -16,9 +16,9 @@ def main(args):
     this_dir = osp.join(osp.dirname(__file__), '.')
 
     if args.dataset == 'THUMOS':
-        save_dir = osp.join(this_dir, 'second_THUMOS_checkpoints_step{}'.format(args.step_size))
+        save_dir = osp.join(this_dir, 'second_{}_checkpoints_step{}_seed{}'.format(args.dataset, args.step_size, args.seed))
     elif args.dataset == 'TVSeries':
-        save_dir = osp.join(this_dir, 'second_TVSeries_checkpoints')
+        save_dir = osp.join('/data/yumin/result', 'second_{}_checkpoints_step{}_seed{}'.format(args.dataset, args.step_size, args.seed))
 
     if not osp.isdir(save_dir):
         os.makedirs(save_dir)
@@ -42,7 +42,7 @@ def main(args):
     if args.dataset == 'THUMOS':
         criterion = utl.MultiCrossEntropyLoss_Second(step_size= args.step_size, num_class=args.num_classes, ignore_index=21).to(device)
     elif args.dataset == "TVSeries":
-        criterion = utl.MultiCrossEntropyLoss_Second().to(device)
+        criterion = utl.MultiCrossEntropyLoss_Second(step_size=args.step_size, num_class=args.num_classes).to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     if osp.isfile(args.checkpoint):

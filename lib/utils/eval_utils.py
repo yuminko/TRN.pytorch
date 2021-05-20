@@ -45,6 +45,7 @@ def compute_result_multilabel(dataset, class_index, score_metrics, target_metric
                               ignore_class=[0], save=True, verbose=False, smooth=False, switch=False):
     result = OrderedDict()
     score_metrics = np.array(score_metrics)
+    print(score_metrics.shape)
     pred_metrics = np.argmax(score_metrics, axis=1)
     target_metrics = np.array(target_metrics)
 

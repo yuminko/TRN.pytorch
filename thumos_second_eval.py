@@ -18,7 +18,7 @@ def to_device(x, device):
 def main(args):
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    utl.set_seed(int(args.seed))
+    # utl.set_seed(int(args.seed))
 
     enc_score_metrics = []
     enc_target_metrics = []
@@ -34,8 +34,13 @@ def main(args):
 
     softmax = nn.Softmax(dim=1).to(device)
 
-    background_score = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    thumos_background_score = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+    tvseries_background_score = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                         0, 0, 0, 0, 0, 0, 0, 0, 0])
+
 
     for session_idx, session in enumerate(args.test_session_set, start=1):
         start = time.time()
@@ -48,7 +53,10 @@ def main(args):
 
             for l in range(target.shape[0]):
                 if l < args.step_size:
-                    enc_score_metrics.append(background_score)
+                    if args.dataset == 'THUMOS':
+                        enc_score_metrics.append(thumos_background_score)
+                    elif args.dataset == 'TVSeries':
+                        enc_score_metrics.append(tvseries_background_score)
                 else:
                     camera_input = to_device(
                         torch.as_tensor(camera_inputs[l-args.step_size].astype(np.float32)), device)
@@ -58,8 +66,11 @@ def main(args):
                     enc_hx, enc_cx, enc_score = \
                             model.step(camera_input, motion_input, enc_hx, enc_cx)
 
+                    # print('enc score shape: ', enc_score.shape)
                     enc_score_metrics.append(softmax(enc_score).cpu().numpy()[0])
-
+              
+                #     print(softmax(enc_score).cpu().numpy()[0].shape)
+                # print(len(enc_score_metrics))
                 enc_target_metrics.append(target[l])
 
         end = time.time()

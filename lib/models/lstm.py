@@ -57,9 +57,6 @@ class baselineLSTM(nn.Module):
 
         scores = torch.stack(score_stack, dim=1).view(-1, self.num_classes)
 
-        print('lstm.py scores shape')
-        print(scores.shape)
-
         return scores
 
         

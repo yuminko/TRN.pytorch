@@ -7,7 +7,8 @@ _DATA_LAYERS = {
     'TRNTHUMOS': TRNTHUMOSDataLayer,
     'LSTMTHUMOS': LSTMTHUMOSDataLayer,
     'LSTMTVSeries': LSTMTHUMOSDataLayer,
-    'SecondTHUMOS': LSTMTHUMOSDataLayer
+    'SecondTHUMOS': LSTMTHUMOSDataLayer,
+    'SecondTVSeries':LSTMTHUMOSDataLayer
 }
 
 def build_dataset(args, phase):
