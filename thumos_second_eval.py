@@ -18,7 +18,6 @@ def to_device(x, device):
 def main(args):
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    # utl.set_seed(int(args.seed))
 
     enc_score_metrics = []
     enc_target_metrics = []
@@ -66,14 +65,11 @@ def main(args):
                     enc_hx, enc_cx, enc_score = \
                             model.step(camera_input, motion_input, enc_hx, enc_cx)
 
-                    # print('enc score shape: ', enc_score.shape)
                     if args.dirichlet:
                         enc_score_metrics.append(enc_score.cpu().numpy()[0])
                     else:
                         enc_score_metrics.append(softmax(enc_score).cpu().numpy()[0])
               
-                #     print(softmax(enc_score).cpu().numpy()[0].shape)
-                # print(len(enc_score_metrics))
                 enc_target_metrics.append(target[l])
 
         end = time.time()

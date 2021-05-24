@@ -16,7 +16,7 @@ def main(args):
     this_dir = osp.join(osp.dirname(__file__), '.')
 
     if args.dataset == 'THUMOS':
-        save_dir = osp.join(this_dir, 'second_{}_checkpoints_step{}_seed{}'.format(args.dataset, args.step_size, args.seed))
+        save_dir = osp.join('/data/yumin/result', 'second_{}_checkpoints_step{}_method{}'.format(args.dataset, args.step_size, args.method))
     elif args.dataset == 'TVSeries':
         save_dir = osp.join('/data/yumin/result', 'second_{}_checkpoints_step{}_seed{}'.format(args.dataset, args.step_size, args.seed))
 
@@ -86,13 +86,9 @@ def main(args):
                     motion_inputs = motion_inputs.to(device)
 
                     extend_target = enc_target.to(device)
-
                     enc_target = enc_target.to(device).view(-1, args.num_classes)
-               
                     enc_score, extend_score = model(camera_inputs, motion_inputs)
-
                     enc_loss = criterion(extend_score, extend_target)
-
                     # enc_loss = criterion(enc_score, enc_target)
                     enc_losses[phase] += enc_loss.item() * batch_size
 

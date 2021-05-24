@@ -74,10 +74,10 @@ class THUMOSFeatureExtractor(nn.Module):
             nn.ReLU(inplace=True),
         )
 
-        self.input_linear_softplus = nn.Sequential(
-            nn.Linear(self.fusion_size, self.fusion_size),
-            nn.Softplus()
-        )
+        # self.input_linear_softplus = nn.Sequential(
+        #     nn.Linear(self.fusion_size, self.fusion_size),
+        #     nn.Softplus()
+        # )
 
     def forward(self, camera_input, motion_input):
         if self.with_camera and self.with_motion:
@@ -87,8 +87,8 @@ class THUMOSFeatureExtractor(nn.Module):
         elif self.with_motion:
             fusion_input = motion_input
 
-        if self.dirichlet:
-            return self.input_linear_softplus(fusion_input)
+        # if self.dirichlet:
+        #     return self.input_linear_softplus(fusion_input)
 
         return self.input_linear(fusion_input)
 

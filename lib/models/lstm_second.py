@@ -24,6 +24,8 @@ class SecondLSTM(nn.Module):
         self.lstm = nn.LSTMCell(self.fusion_size, self.hidden_size)
         self.classifier = nn.Linear(self.hidden_size, self.num_classes)
 
+        self.softplus = nn.Softplus()
+
     def encoder(self, camera_input, sensor_input, enc_hx, enc_cx):
         fusion_input = self.feature_extractor(camera_input, sensor_input)
         enc_hx, enc_cx = self.lstm(fusion_input, (enc_hx, enc_cx))
@@ -31,14 +33,14 @@ class SecondLSTM(nn.Module):
 
         if self.dirichlet:
             if self.method == 'Mean':
-                dist = distributions.Dirichlet(enc_score)
+                enc_score_soft = self.softplus(enc_score)
+                dist = distributions.Dirichlet(enc_score_soft)
                 enc_score = dist.mean
 
             elif self.method == 'Sample':
-                dist = distributions.Dirichlet(enc_score)
+                enc_score_soft = self.softplus(enc_score)
+                dist = distributions.Dirichlet(enc_score_soft)
                 enc_score =dist.rsample()
-                print(enc_score)
-                asdf
 
         return enc_hx, enc_cx, enc_score
 

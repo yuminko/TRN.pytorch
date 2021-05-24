@@ -59,8 +59,7 @@ class MultiCrossEntropyLoss_Second(nn.Module):
             notice_index = [i for i in range(target.shape[-1]) if i != self.ignore_index]
 
             if self.dirichlet:
-                # output = torch.sum(-step_target[:,notice_index] * torch.log(step_input[:,notice_index]),1)
-                output = torch.sum(torch.abs(step_target[:,notice_index] * step_input[:,notice_index]),1)
+                output = torch.sum(-step_target[:,notice_index] * torch.log(step_input[:,notice_index]),1)
 
             else:
                 output = torch.sum(-step_target[:,notice_index] * logsoftmax(step_input[:,notice_index]),1)
