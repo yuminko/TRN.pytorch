@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.distributions as distributions
 
 from .feature_extractor import build_feature_extractor
 
@@ -13,6 +14,9 @@ class SecondLSTM(nn.Module):
         self.step_size = args.step_size
         self.num_classes = args.num_classes
         
+        self.dirichlet = args.dirichlet
+        self.method = args.method
+
         self.feature_extractor = build_feature_extractor(args)
         self.fusion_size = self.feature_extractor.fusion_size
         # print(self.fusion_size)
@@ -22,9 +26,20 @@ class SecondLSTM(nn.Module):
 
     def encoder(self, camera_input, sensor_input, enc_hx, enc_cx):
         fusion_input = self.feature_extractor(camera_input, sensor_input)
-        # dummy_input = fusion_input.new_zeros((fusion_input.shape))
         enc_hx, enc_cx = self.lstm(fusion_input, (enc_hx, enc_cx))
         enc_score = self.classifier(enc_hx)
+
+        if self.dirichlet:
+            if self.method == 'Mean':
+                dist = distributions.Dirichlet(enc_score)
+                enc_score = dist.mean
+
+            elif self.method == 'Sample':
+                dist = distributions.Dirichlet(enc_score)
+                enc_score =dist.rsample()
+                print(enc_score)
+                asdf
+
         return enc_hx, enc_cx, enc_score
 
 
@@ -59,17 +74,8 @@ class SecondLSTM(nn.Module):
         for step in range(self.step_size):
             del score_stack[-1]
 
-        # print('score-Stack')
-        # print(len(score_stack))
-        # print(score_stack[0].shape)
-
         scores = torch.stack(score_stack, dim=1).view(-1, self.num_classes)
-        extend_scores = torch.stack(score_stack, dim=1).view(-1,self.enc_steps, self.num_classes)
-
-        # print('scroes')
-        # print(scores.shape)
-        # print('extended')
-        # print(extend_scores.shape)
+        extend_scores = torch.stack(score_stack, dim=1).view(-1, self.enc_steps, self.num_classes)
 
         return scores, extend_scores
 

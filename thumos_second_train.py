@@ -40,7 +40,7 @@ def main(args):
     model = model.to(device)
 
     if args.dataset == 'THUMOS':
-        criterion = utl.MultiCrossEntropyLoss_Second(step_size= args.step_size, num_class=args.num_classes, ignore_index=21).to(device)
+        criterion = utl.MultiCrossEntropyLoss_Second(step_size= args.step_size, num_class=args.num_classes, dirichlet=args.dirichlet, ignore_index=21).to(device)
     elif args.dataset == "TVSeries":
         criterion = utl.MultiCrossEntropyLoss_Second(step_size=args.step_size, num_class=args.num_classes).to(device)
 
@@ -87,12 +87,12 @@ def main(args):
 
                     extend_target = enc_target.to(device)
 
-
                     enc_target = enc_target.to(device).view(-1, args.num_classes)
                
-
                     enc_score, extend_score = model(camera_inputs, motion_inputs)
+
                     enc_loss = criterion(extend_score, extend_target)
+
                     # enc_loss = criterion(enc_score, enc_target)
                     enc_losses[phase] += enc_loss.item() * batch_size
 
@@ -116,15 +116,16 @@ def main(args):
         end = time.time()
 
         if args.debug:
-            result_file = 'LSTM-step_size-{}-inputs-{}-epoch-{}.json'.format(args.step_size, args.inputs, epoch)
+            result_file = osp.join(this_dir, 'second-step{}-inputs-{}-epoch-{}.json'.format(args.step_size, args.inputs, epoch))
             # Compute result for encoder
             enc_mAP = utl.compute_result_multilabel(
+                args.dataset,
                 args.class_index,
                 enc_score_metrics,
                 enc_target_metrics,
                 save_dir,
                 result_file,
-                ignore_class=[21],
+                ignore_class=[0,21],
                 save=True,
             )
 

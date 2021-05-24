@@ -67,7 +67,10 @@ def main(args):
                             model.step(camera_input, motion_input, enc_hx, enc_cx)
 
                     # print('enc score shape: ', enc_score.shape)
-                    enc_score_metrics.append(softmax(enc_score).cpu().numpy()[0])
+                    if args.dirichlet:
+                        enc_score_metrics.append(enc_score.cpu().numpy()[0])
+                    else:
+                        enc_score_metrics.append(softmax(enc_score).cpu().numpy()[0])
               
                 #     print(softmax(enc_score).cpu().numpy()[0].shape)
                 # print(len(enc_score_metrics))
