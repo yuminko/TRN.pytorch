@@ -15,19 +15,21 @@ from models import build_model
 def main(args):
     this_dir = osp.join(osp.dirname(__file__), '.')
 
-    if args.dataset == 'THUMOS':
-        save_dir = osp.join('/data/yumin/result', 'second_{}_checkpoints_step{}_method{}'.format(args.dataset, args.step_size, args.method))
-    elif args.dataset == 'TVSeries':
-        save_dir = osp.join('/data/yumin/result', 'second_{}_checkpoints_step{}_seed{}'.format(args.dataset, args.step_size, args.seed))
+    step_list = [int(step) for step in args.step_size]
+
+    ### make directory for each step size
+
+    save_dir = osp.join('/data/yumin/result', 'second_{}_checkpoints_step{}_method{}'.format(args.dataset, args.step_size, args.method))
 
     if not osp.isdir(save_dir):
         os.makedirs(save_dir)
+    
+
     command = 'python ' + ' '.join(sys.argv)
-    logger = utl.setup_logger(osp.join(this_dir, 'lstm_log.txt'), command=command)
+    logger = utl.setup_logger(osp.join(this_dir, 'lstm_log_step{}.txt'.format(args.step_size)), command=command)
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     utl.set_seed(int(args.seed))
-
 
     model = build_model(args)
     if osp.isfile(args.checkpoint):
@@ -39,8 +41,9 @@ def main(args):
         model = nn.DataParallel(model)
     model = model.to(device)
 
+
     if args.dataset == 'THUMOS':
-        criterion = utl.MultiCrossEntropyLoss_Second(step_size= args.step_size, num_class=args.num_classes, dirichlet=args.dirichlet, ignore_index=21).to(device)
+        criterion = utl.MultiCrossEntropyLoss_Second(num_class=args.num_classes, dirichlet=args.dirichlet, ignore_index=21).to(device)
     elif args.dataset == "TVSeries":
         criterion = utl.MultiCrossEntropyLoss_Second(step_size=args.step_size, num_class=args.num_classes).to(device)
 
@@ -50,6 +53,7 @@ def main(args):
         for param_group in optimizer.param_groups:
             param_group['lr'] = args.lr
         args.start_epoch += checkpoint['epoch']
+
     softmax = nn.Softmax(dim=1).to(device)
 
     for epoch in range(args.start_epoch, args.start_epoch + args.epochs):
@@ -64,6 +68,7 @@ def main(args):
         }
 
         enc_losses = {phase: 0.0 for phase in args.phases}
+        enc_steps = {step : 0.0 for step in args.step_size}
         enc_score_metrics = []
         enc_target_metrics = []
         enc_mAP = 0.0
@@ -88,23 +93,31 @@ def main(args):
                     extend_target = enc_target.to(device)
                     enc_target = enc_target.to(device).view(-1, args.num_classes)
                     enc_score, extend_score = model(camera_inputs, motion_inputs)
-                    enc_loss = criterion(extend_score, extend_target)
-                    # enc_loss = criterion(enc_score, enc_target)
-                    enc_losses[phase] += enc_loss.item() * batch_size
+
+                    step_loss = criterion(extend_score[0:batch_size,:,:], extend_target, step_size = args.step_size[0])
+
+                    for i in range(1, len(args.step_size)):
+                        s = i * batch_size
+                        e = batch_size * ( i + 1)
+                        enc_loss = criterion(extend_score[s:e,:,:], extend_target, step_size = args.step_size[i])
+                        step_loss += enc_loss
+                        enc_steps[args.step_size[i]] = enc_loss
+                    
+                    enc_losses[phase] += step_loss.item() * batch_size
 
                     if args.verbose:
                         print('Epoch: {:2} | iteration: {:3} | enc_loss: {:.5f} '.format(
-                            epoch, batch_idx, enc_loss.item()
+                            epoch, batch_idx, step_loss.item()
                         ))
 
                     if training:
                         optimizer.zero_grad()
-                        loss = enc_loss 
+                        loss = step_loss 
                         loss.backward()
                         optimizer.step()
                     else:
                         # Prepare metrics for encoder
-                        enc_score = softmax(enc_score).cpu().numpy()
+                        enc_score = enc_score[0:batch_size * args.enc_steps,:].cpu().numpy()    ## softmax check
                         enc_target = enc_target.cpu().numpy()
                         enc_score_metrics.extend(enc_score)
                         enc_target_metrics.extend(enc_target)
@@ -112,23 +125,24 @@ def main(args):
         end = time.time()
 
         if args.debug:
-            result_file = osp.join(this_dir, 'second-step{}-inputs-{}-epoch-{}.json'.format(args.step_size, args.inputs, epoch))
-            # Compute result for encoder
-            enc_mAP = utl.compute_result_multilabel(
-                args.dataset,
-                args.class_index,
-                enc_score_metrics,
-                enc_target_metrics,
-                save_dir,
-                result_file,
-                ignore_class=[0,21],
-                save=True,
-            )
+            if epoch % 5 == 0:
+                result_file = osp.join(this_dir, 'second-step{}-inputs-{}-epoch-{}.json'.format(args.step_size, args.inputs, epoch))
+                # Compute result for encoder
+                enc_mAP = utl.compute_result_multilabel(
+                    args.dataset,
+                    args.class_index,
+                    enc_score_metrics,
+                    enc_target_metrics,
+                    save_dir,
+                    result_file,
+                    ignore_class=[0,21],
+                    save=True,
+                )
 
         # Output result
         logger.lstm_output(epoch, enc_losses, 
-                      len(data_loaders['train'].dataset), len(data_loaders['test'].dataset),
-                      enc_mAP,  end - start, debug=args.debug)
+                    len(data_loaders['train'].dataset), len(data_loaders['test'].dataset),
+                    enc_mAP,  end - start, debug=args.debug)
 
         # Save model
         checkpoint_file = 'Second-step_size-{}-inputs-{}-epoch-{}.pth'.format(args.step_size, args.inputs, epoch)
