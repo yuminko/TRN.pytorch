@@ -19,13 +19,15 @@ def main(args):
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    enc_score_metrics = []
+    for steps in args.step_size:
+        globals()['enc_score_metrics_step%s' %steps] = []
     enc_target_metrics = []
 
     if osp.isfile(args.checkpoint):
         checkpoint = torch.load(args.checkpoint)
     else:
         raise(RuntimeError('Cannot find the checkpoint {}'.format(args.checkpoint)))
+
     model = build_model(args).to(device)
     model.load_state_dict(checkpoint['model_state_dict'])
     model.train(False)
@@ -50,26 +52,31 @@ def main(args):
             enc_hx = to_device(torch.zeros(model.hidden_size), device)
             enc_cx = to_device(torch.zeros(model.hidden_size), device)
 
-            for l in range(target.shape[0]):
-                if l < args.step_size:
-                    if args.dataset == 'THUMOS':
-                        enc_score_metrics.append(thumos_background_score)
-                    elif args.dataset == 'TVSeries':
-                        enc_score_metrics.append(tvseries_background_score)
-                else:
-                    camera_input = to_device(
-                        torch.as_tensor(camera_inputs[l-args.step_size].astype(np.float32)), device)
-                    motion_input = to_device(
-                        torch.as_tensor(motion_inputs[l-args.step_size].astype(np.float32)), device)
+            for l in range(target.shape[0]):  
 
-                    enc_hx, enc_cx, enc_score = \
-                            model.step(camera_input, motion_input, enc_hx, enc_cx)
-
-                    if args.dirichlet:
-                        enc_score_metrics.append(enc_score.cpu().numpy()[0])
+                for steps in args.step_size:
+                    
+                    step = int(steps)
+                        
+                    if l < int(step):
+                        if args.dataset == 'THUMOS':
+                            globals()['enc_score_metrics_step%s' %step].append(thumos_background_score)
+                        elif args.dataset == 'TVSeries':
+                            globals()['enc_score_metrics_step%s' %step].append(tvseries_background_score)
                     else:
-                        enc_score_metrics.append(softmax(enc_score).cpu().numpy()[0])
-              
+                        camera_input = to_device(
+                            torch.as_tensor(camera_inputs[l-step].astype(np.float32)), device)
+                        motion_input = to_device(
+                            torch.as_tensor(motion_inputs[l-step].astype(np.float32)), device)
+
+                        enc_hx, enc_cx, enc_score = \
+                                model.step(camera_input, motion_input, enc_hx, enc_cx, step)
+
+                        if args.dirichlet:
+                            globals()['enc_score_metrics_step%s' %step].append(enc_score.cpu().numpy()[0])
+                        else:
+                            globals()['enc_score_metrics_step%s' %step].append(softmax(enc_score).cpu().numpy()[0])
+
                 enc_target_metrics.append(target[l])
 
         end = time.time()
@@ -82,9 +89,13 @@ def main(args):
     # Compute result for encoder
 
     if args.dataset == "THUMOS":
-        utl.compute_result_multilabel(args.dataset, args.class_index,
-                                    enc_score_metrics, enc_target_metrics,
-                                    save_dir, result_file, ignore_class=[0,21], save=True, verbose=True)
+        for steps in args.step_size:
+            print('Step size:   ', steps)
+            print(len(globals()['enc_score_metrics_step%s' %steps]))
+            print(len(enc_target_metrics))
+            utl.compute_result_multilabel(args.dataset, args.class_index,
+                                        globals()['enc_score_metrics_step%s' %steps], enc_target_metrics,
+                                        save_dir, result_file, ignore_class=[0,21], save=True, verbose=True)
     elif args.dataset == "TVSeries":
         utl.compute_result_multilabel(args.dataset, args.class_index,
                                     enc_score_metrics, enc_target_metrics,

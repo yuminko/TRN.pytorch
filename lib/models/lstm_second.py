@@ -45,10 +45,14 @@ class SecondLSTM(nn.Module):
         return enc_hx, enc_cx, enc_score
 
 
-    def step(self, camera_input, sensor_input, enc_hx, enc_cx):
+    def step(self, camera_input, sensor_input, enc_hx, enc_cx, step):
         # Encoder -> time t
+        fusion_input = self.feature_extractor(camera_input, sensor_input)
+        num = self.step_size.index(str(step))
+        lstm = self.lstms[num]
+        classifier = self.classifiers[num]
         enc_hx, enc_cx, enc_score = \
-                self.encoder(camera_input, sensor_input, enc_hx, enc_cx)
+                self.encoder(fusion_input, enc_hx, enc_cx, lstm, classifier)
 
         return enc_hx, enc_cx, enc_score
 
