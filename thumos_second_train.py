@@ -19,7 +19,7 @@ def main(args):
 
     ### make directory for each step size
 
-    save_dir = osp.join('/data/yumin/result', 'second_{}_checkpoints_step{}_method{}'.format(args.dataset, args.step_size, args.method))
+    save_dir = osp.join('/data/yumin/result', 'second_{}_checkpoints_step{}_method{}'.format(args.dataset, step_list, args.method))
 
     if not osp.isdir(save_dir):
         os.makedirs(save_dir)
@@ -94,12 +94,10 @@ def main(args):
                     enc_target = enc_target.to(device).view(-1, args.num_classes)
                     enc_score, extend_score = model(camera_inputs, motion_inputs)
 
-                    step_loss = criterion(extend_score[0:batch_size,:,:], extend_target, step_size = args.step_size[0])
+                    step_loss = criterion(extend_score[0,:,:,:], extend_target, step_size = args.step_size[0])
 
                     for i in range(1, len(args.step_size)):
-                        s = i * batch_size
-                        e = batch_size * ( i + 1)
-                        enc_loss = criterion(extend_score[s:e,:,:], extend_target, step_size = args.step_size[i])
+                        enc_loss = criterion(extend_score[i,:,:,:], extend_target, step_size = args.step_size[i])
                         step_loss += enc_loss
                         enc_steps[args.step_size[i]] = enc_loss
                     
@@ -117,7 +115,7 @@ def main(args):
                         optimizer.step()
                     else:
                         # Prepare metrics for encoder
-                        enc_score = enc_score[0:batch_size * args.enc_steps,:].cpu().numpy()    ## softmax check
+                        enc_score = enc_score[0, :,:].cpu().numpy()    ## softmax check
                         enc_target = enc_target.cpu().numpy()
                         enc_score_metrics.extend(enc_score)
                         enc_target_metrics.extend(enc_target)
@@ -126,7 +124,7 @@ def main(args):
 
         if args.debug:
             if epoch % 5 == 0:
-                result_file = osp.join(this_dir, 'second-step{}-inputs-{}-epoch-{}.json'.format(args.step_size, args.inputs, epoch))
+                result_file = osp.join(this_dir, 'second-step{}-inputs-{}-epoch-{}.json'.format(step_list, args.inputs, epoch))
                 # Compute result for encoder
                 enc_mAP = utl.compute_result_multilabel(
                     args.dataset,
@@ -145,7 +143,7 @@ def main(args):
                     enc_mAP,  end - start, debug=args.debug)
 
         # Save model
-        checkpoint_file = 'Second-step_size-{}-inputs-{}-epoch-{}.pth'.format(args.step_size, args.inputs, epoch)
+        checkpoint_file = 'Second-step_size-{}-inputs-{}-epoch-{}.pth'.format(step_list, args.inputs, epoch)
         torch.save({
             'epoch': epoch,
             'model_state_dict': model.module.state_dict() if args.distributed else model.state_dict(),

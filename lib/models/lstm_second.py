@@ -19,7 +19,6 @@ class SecondLSTM(nn.Module):
 
         self.feature_extractor = build_feature_extractor(args)
         self.fusion_size = self.feature_extractor.fusion_size
-        # print(self.fusion_size)
         
         self.lstms = nn.ModuleList( [nn.LSTMCell(self.fusion_size, self.hidden_size) for i in range(len(self.step_size))])
         self.classifiers = nn.ModuleList([nn.Linear(self.hidden_size, self.num_classes) for i in range(len(self.step_size))])
@@ -60,21 +59,20 @@ class SecondLSTM(nn.Module):
 
     def forward(self, camera_inputs, sensor_inputs):
         batch_size = camera_inputs.shape[0]
-        enc_hx = camera_inputs.new_zeros((batch_size, self.hidden_size))
-        enc_cx = camera_inputs.new_zeros((batch_size, self.hidden_size))
-        # score_stack = []
 
         dummy_score = camera_inputs.new_zeros((batch_size,self.num_classes))
+        score_stacks = []
 
+        for num, steps in enumerate(self.step_size):
 
-        for steps in self.step_size:
+            enc_hx = camera_inputs.new_zeros((batch_size, self.hidden_size))
+            enc_cx = camera_inputs.new_zeros((batch_size, self.hidden_size))
 
-            num = 0
-            globals()['score_stack_%s' %steps] = []
+            each_step_score = []
 
             if steps !='0':
                 for step in range(int(steps)):
-                    globals()['score_stack_%s' %steps].append(dummy_score)   ### 처음에 dummy 추가
+                    each_step_score.append(dummy_score)   ### 처음에 dummy 추가
 
             for enc_step in range(self.enc_steps):
                 fusion_input = self.feature_extractor(camera_inputs[:, enc_step], sensor_inputs[:,enc_step])
@@ -84,23 +82,22 @@ class SecondLSTM(nn.Module):
                     fusion_input, 
                     enc_hx, enc_cx, lstm, classifier)
 
-                globals()['score_stack_%s' %steps].append(enc_score)
+                each_step_score.append(enc_score)
 
-            num += 1
 
             if steps != '0':        
-                globals()['score_stack_%s' %steps] = globals()['score_stack_%s' %steps][0:-int(steps)]    ### delete 
+                each_step_score = each_step_score[0:-int(steps)]    ### delete 
+
+            each_step_score = torch.stack(each_step_score, dim=1) # (B, T, C)
+            score_stacks.append(each_step_score) # LEN_STEP * (B, T, C)
      
 
         # scores = torch.stack(score_stack, dim=1).view(-1, self.num_classes)
         # extend_scores = torch.stack(score_stack, dim=1).view(-1, self.enc_steps, self.num_classes)
-        for steps in self.step_size:
-            globals()['scores_%s' %steps] = torch.stack(globals()['score_stack_%s' %steps], dim=1).view(-1, self.num_classes)
-            globals()['extend_scores_%s' %steps] = torch.stack(globals()['score_stack_%s' %steps], dim=1).view(-1, self.enc_steps, self.num_classes)
 
-        scores = torch.cat([globals()['scores_%s' %steps] for steps in self.step_size])
-        extend_scores = torch.cat([globals()['extend_scores_%s' %steps] for steps in self.step_size])
-
+        extend_scores = torch.stack(score_stacks, dim=0)  # (LEN_STEP, B, T, C)
+        LEN_STEP, _, _, CHANNEL = extend_scores.size()
+        scores = extend_scores.view(LEN_STEP, -1, CHANNEL) # (LEN_STEP, B*T, C)
 
         return scores, extend_scores
 
