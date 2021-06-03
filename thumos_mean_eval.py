@@ -117,16 +117,6 @@ def main(args):
     result_file  = osp.basename(args.checkpoint).replace('.pth', '.json')
     # Compute result for encoder
 
-    # print(len(enc_target_metrics))
-    # print(len(mean_score_metrics))
-    
-    # for l in range(len(mean_score_metrics)):
-    #     mean_score_metrics[l] = mean_score_metrics[l] / mean_num_steps[l]
-
-    for l in range(len(mean_score_metrics)):
-        mean_score_metrics[l] = mean_score_metrics[l] / 6
-
-
     if args.dataset == "THUMOS":
         for i, steps in enumerate(args.step_size):
             print('Step size:   ', steps)
