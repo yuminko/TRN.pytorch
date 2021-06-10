@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.distributions as distributions
 
+import numpy as np
+
 from .feature_extractor import build_feature_extractor
 
 
@@ -16,6 +18,7 @@ class SecondLSTM(nn.Module):
         
         self.dirichlet = args.dirichlet
         self.method = args.method
+        self.var_method = args.var_method
 
         self.feature_extractor = build_feature_extractor(args)
         self.fusion_size = self.feature_extractor.fusion_size
@@ -25,7 +28,7 @@ class SecondLSTM(nn.Module):
 
         self.softplus = nn.Softplus()
 
-    def encoder(self, fusion_input, enc_hx, enc_cx, lstm, classifier):
+    def encoder(self, fusion_input, enc_hx, enc_cx, lstm, classifier, test=False):
         # fusion_input = self.feature_extractor(camera_input, sensor_input)
         enc_hx, enc_cx = lstm(fusion_input, (enc_hx, enc_cx))
         enc_score = classifier(enc_hx)
@@ -40,6 +43,28 @@ class SecondLSTM(nn.Module):
                 enc_score_soft = self.softplus(enc_score)
                 dist = distributions.Dirichlet(enc_score_soft)
                 enc_score =dist.rsample()
+        
+        if test:
+            if self.var_method == 'covariance':
+                var = dist.variance
+                diagonal = np.diag(var.cpu().numpy()[0])
+                con = dist.concentration
+                con0 = con.sum(-1,True)
+                con = con.cpu().numpy()[0]
+                d = (con0.pow(2) * (con0+1))
+                l = len(var.cpu().numpy()[0])
+                for i in range(l):
+                    for j in range(l):
+                        if i != j:
+                            diagonal[i][j] = -con[i]*con[j] / d
+
+                return enc_hx, enc_cx, enc_score, diagonal
+            
+            elif self.var_method == 'diagonal':
+                var = dist.variance
+                diagonal = np.diag(var.cpu().numpy()[0])
+                # print(diagonal)
+                return enc_hx, enc_cx, enc_score, diagonal
 
         return enc_hx, enc_cx, enc_score
 
@@ -50,17 +75,17 @@ class SecondLSTM(nn.Module):
         num = self.step_size.index(str(step))
         lstm = self.lstms[num]
         classifier = self.classifiers[num]
-        enc_hx, enc_cx, enc_score = \
-                self.encoder(fusion_input, enc_hx, enc_cx, lstm, classifier)
+        enc_hx, enc_cx, enc_score, var = \
+                self.encoder(fusion_input, enc_hx, enc_cx, lstm, classifier, test=True)
 
-        return enc_hx, enc_cx, enc_score
+        return enc_hx, enc_cx, enc_score, var
 
 
 
     def forward(self, camera_inputs, sensor_inputs):
         batch_size = camera_inputs.shape[0]
-
         dummy_score = camera_inputs.new_zeros((batch_size,self.num_classes))
+        
         score_stacks = []
 
         for num, steps in enumerate(self.step_size):
@@ -95,10 +120,9 @@ class SecondLSTM(nn.Module):
         # scores = torch.stack(score_stack, dim=1).view(-1, self.num_classes)
         # extend_scores = torch.stack(score_stack, dim=1).view(-1, self.enc_steps, self.num_classes)
 
-        extend_scores = torch.stack(score_stacks, dim=0)  # (LEN_STEP, B, T, C)
-        LEN_STEP, _, _, CHANNEL = extend_scores.size()
-        scores = extend_scores.view(LEN_STEP, -1, CHANNEL) # (LEN_STEP, B*T, C)
+        extend_scores = torch.stack(score_stacks, dim=1)  # (B, LEN_STEP, T, C)
+        B, LEN_STEP, _, CHANNEL = extend_scores.size()
 
-        return scores, extend_scores
+        return extend_scores
 
         
