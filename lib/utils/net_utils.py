@@ -29,7 +29,7 @@ def build_data_loader(args, phase='train'):
         dataset=build_dataset(args, phase),
         batch_size=args.batch_size,
         shuffle=phase=='train',
-        num_workers=args.num_workers, drop_last=True
+        num_workers=args.num_workers,
     )
     return data_loaders
 

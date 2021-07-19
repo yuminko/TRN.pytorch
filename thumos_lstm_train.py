@@ -16,7 +16,7 @@ def main(args):
     this_dir = osp.join(osp.dirname(__file__), '.')
 
     if args.dataset == 'THUMOS':
-        save_dir = osp.join(this_dir, 'lstm_THUMOS_checkpoints')
+        save_dir = osp.join('/dataset/volume1/users/yumin/result', 'OAD_{}_checkpoints_0714'.format(args.dataset))
     elif args.dataset == 'TVSeries':
         save_dir = osp.join(this_dir, 'lstm_TVSeries_checkpoints')
 
@@ -79,7 +79,7 @@ def main(args):
                 continue
 
             with torch.set_grad_enabled(training):
-                for batch_idx, (camera_inputs, motion_inputs, enc_target) \
+                for batch_idx, (camera_inputs, motion_inputs, enc_target, smooth_target) \
                         in enumerate(data_loaders[phase], start=1):
                     batch_size = camera_inputs.shape[0]
                     camera_inputs = camera_inputs.to(device)
@@ -126,7 +126,7 @@ def main(args):
         # Output result
         logger.lstm_output(epoch, enc_losses, 
                       len(data_loaders['train'].dataset), len(data_loaders['test'].dataset),
-                      enc_mAP,  end - start, debug=args.debug)
+                      enc_mAP, end - start, debug=args.debug)
 
         # Save model
         checkpoint_file = 'LSTM-inputs-{}-epoch-{}.pth'.format(args.inputs, epoch)

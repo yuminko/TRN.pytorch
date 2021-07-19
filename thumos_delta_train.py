@@ -12,13 +12,19 @@ import lib.utils as utl
 from configs.thumos import parse_second_args as parse_args
 from models import build_model
 
+# import numpy as np
+
+
+torch.set_printoptions(precision=4)
+
+
 def main(args):
     this_dir = osp.join(osp.dirname(__file__), '.')
 
     ### make directory for each step size
     # '/dataset/volume1/users/yumin/result'
     #'/data/yumin/result'
-    save_dir = osp.join('/dataset/volume1/users/yumin/result', 'delta_{}_checkpoints_method{}_ver2'.format(args.dataset, args.method))
+    save_dir = osp.join('/dataset/volume1/users/yumin/result', 'delta_{}_checkpoints_method{}_noenc_smoothbeta0.5'.format(args.dataset, args.method))
 
     if not osp.isdir(save_dir):
         os.makedirs(save_dir)
@@ -43,7 +49,10 @@ def main(args):
 
     if args.dataset == 'THUMOS':
         criterion1 = utl.MultiCrossEntropyLoss_Delta(num_class=args.num_classes, dirichlet=args.dirichlet, ignore_index=21).to(device)
-        criterion2 = utl.MultiCrossEntropyLoss_Delta(num_class=args.num_classes, dirichlet=False, ignore_index=21).to(device)
+        # criterion2 = nn.MSELoss()
+        # criterion2 = nn.L1Loss()
+        criterion2 = nn.SmoothL1Loss()
+        # criterion2 = nn.HuberLoss()
 
     elif args.dataset == "TVSeries":
         criterion = utl.MultiCrossEntropyLoss_Delta(num_class=args.num_classes, dirichlet=args.dirichlet).to(device)
@@ -71,7 +80,10 @@ def main(args):
         enc_losses = {phase: 0.0 for phase in args.phases}
         enc_score_metrics = []
         enc_target_metrics = []
+        delta_score_metrics = []
+        delta_target_metrics = []
         enc_mAP = 0.0
+        delta_mAP = 0.0
 
         start = time.time()
         for phase in args.phases:
@@ -91,46 +103,55 @@ def main(args):
                     camera_inputs = camera_inputs.to(device)
                     motion_inputs = motion_inputs.to(device)
 
-                    if batch_idx == 1:
-                        oad_before = camera_inputs.new_zeros((batch_size, args.enc_steps, args.num_classes))
-                    else:
-                        oad_before = oad_score.clone().detach()
-
                     extend_target = enc_target.to(device)
                     enc_target = enc_target.to(device).view(-1, args.num_classes)
                     smooth_target = smooth_target.to(device)
                     oad_score, delta_score = model(camera_inputs, motion_inputs)
 
+                    oad_before = oad_score.clone().detach()
+                    oad_before = oad_before[:,1::,:]
+
                     ## have to make delta target and compute delta loss
 
-                    new_target = smooth_target - oad_before
+                    new_target = smooth_target[:,1::,:] - oad_before
+                    # print('***** DELTA TARGET')
+                    # print(new_target)
+                    # print('***** DELTA SCORE')
+                    # print(delta_score[:,1::,:])
 
                     oad_loss = criterion1(oad_score, extend_target)
-                    delta_loss = criterion2(delta_score, new_target)
+                    delta_loss = criterion2(delta_score[:,1::,:], new_target)   # ignore the first
+                    # delta_loss = criterion2(delta_score[:,1::,:], extend_target[:,1::,:])   # without labelsmoothing
                     
                     enc_losses[phase] += oad_loss.item() * batch_size
 
                     if args.verbose:
                         print('Epoch: {:2} | iteration: {:3} | enc_loss: {:.5f} | delta_loss: {:.5f}'.format(
-                            epoch, batch_idx, oad_loss.item(), delta_loss.item()
+                            epoch, batch_idx, oad_loss.item(), delta_loss.item()*10
                         ))
 
                     if training:
                         optimizer.zero_grad()
-                        loss = oad_loss + delta_loss
+                        loss = oad_loss + delta_loss * 10
                         loss.backward()
                         optimizer.step()
                     else:
                         # Prepare metrics for encoder
-                        enc_score = extend_score[:,0,:, :].cpu().numpy()    ## softmax check
-                        enc_target = entend_target.cpu().numpy()
+                        enc_score = oad_score.cpu().numpy()    ## softmax check
+                        enc_target = extend_target.cpu().numpy()
                         enc_score_metrics.extend(enc_score)
                         enc_target_metrics.extend(enc_target)
+                        delta_score_c = delta_score[:,1::,:].reshape(-1, args.num_classes)
+                        delta = delta_score_c.cpu().numpy()
+                        new_target_c = new_target.reshape(-1, args.num_classes)
+                        delta_target = new_target_c.cpu().numpy()
+                        delta_score_metrics.extend(delta)
+                        delta_target_metrics.extend(delta_target)
 
         end = time.time()
 
         if args.debug:
-            if epoch % 5 == 0:
+            if epoch % 1 == 0:
                 result_file = osp.join(this_dir, 'delta-inputs-{}-epoch-{}.json'.format(args.inputs, epoch))
                 # Compute result for encoder
                 enc_mAP = utl.compute_result_multilabel(
@@ -144,10 +165,22 @@ def main(args):
                     save=True,
                 )
 
+                delta_mAP = utl.compute_result_multilabel(
+                    args.dataset,
+                    args.class_index,
+                    delta_score_metrics,
+                    delta_target_metrics,
+                    save_dir,
+                    result_file,
+                    ignore_class=[0,21],
+                    save=True,
+                    smooth=True,
+                )
+
         # Output result
-        logger.lstm_output(epoch, enc_losses, 
+        logger.delta_output(epoch, enc_losses, 
                     len(data_loaders['train'].dataset), len(data_loaders['test'].dataset),
-                    enc_mAP,  end - start, debug=args.debug)
+                    enc_mAP, delta_mAP, end - start, debug=args.debug)
 
         # Save model
         checkpoint_file = 'delta-inputs-{}-epoch-{}.pth'.format(args.inputs, epoch)

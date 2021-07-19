@@ -54,7 +54,7 @@ class THUMOSFeatureExtractor(nn.Module):
     def __init__(self, args):
         super(THUMOSFeatureExtractor, self).__init__()
 
-        self.dirichlet = args.dirichlet
+        # self.dirichlet = args.dirichlet
 
         if args.inputs in ['camera', 'motion', 'multistream']:
             self.with_camera = 'motion' not in args.inputs
@@ -74,10 +74,6 @@ class THUMOSFeatureExtractor(nn.Module):
             nn.ReLU(inplace=True),
         )
 
-        # self.input_linear_softplus = nn.Sequential(
-        #     nn.Linear(self.fusion_size, self.fusion_size),
-        #     nn.Softplus()
-        # )
 
     def forward(self, camera_input, motion_input):
         if self.with_camera and self.with_motion:
@@ -86,9 +82,6 @@ class THUMOSFeatureExtractor(nn.Module):
             fusion_input = camera_input
         elif self.with_motion:
             fusion_input = motion_input
-
-        # if self.dirichlet:
-        #     return self.input_linear_softplus(fusion_input)
 
         return self.input_linear(fusion_input)
 

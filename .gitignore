@@ -1,3 +1,9 @@
+*.png
+*.tmp
+*.txt
+
+results/*
+
 */*.pth
 */**/*.pth
 */**/**/*.pth

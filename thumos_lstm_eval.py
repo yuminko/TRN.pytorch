@@ -32,6 +32,9 @@ def main(args):
 
     softmax = nn.Softmax(dim=1).to(device)
 
+    thumos_background_score = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
     for session_idx, session in enumerate(args.test_session_set, start=1):
         start = time.time()
         with torch.set_grad_enabled(False):
@@ -41,7 +44,9 @@ def main(args):
             enc_hx = to_device(torch.zeros(model.hidden_size), device)
             enc_cx = to_device(torch.zeros(model.hidden_size), device)
 
-
+            # enc_score = enc_hx.new_zeros((args.batch_size, args.num_classes))
+            enc_score = to_device(torch.as_tensor(thumos_background_score.astype(np.float32)), device)
+            
             # print(target.shape[0])
             # 
             for l in range(target.shape[0]):
@@ -51,9 +56,11 @@ def main(args):
                     torch.as_tensor(motion_inputs[l].astype(np.float32)), device)
 
                 enc_hx, enc_cx, enc_score = \
-                        model.step(camera_input, motion_input, enc_hx, enc_cx)
+                        model.step(camera_input, motion_input, enc_hx, enc_cx, enc_score)
 
-                enc_score_metrics.append(softmax(enc_score).cpu().numpy()[0])
+                enc_score_metrics.append(enc_score.cpu().numpy()[0])
+                # enc_score_metrics.append(softmax(enc_score).cpu().numpy()[0])
+
                 # print(softmax(enc_score).cpu().numpy()[0])
                 # print(type(softmax(enc_score).cpu().numpy()[0]))
                 enc_target_metrics.append(target[l])

@@ -40,4 +40,5 @@ def parse_second_args():
     parser.add_argument('--method', default=None, type=str, help=['Mean','Sample'])
     parser.add_argument('--merge', action='store_true')
     parser.add_argument('--var_method', default=None, type=str, help=['covariance','diagonal'])
+    parser.add_argument('--loss_method', default=None, type=str, help=['oad_before','state_before'] )
     return build_data_info(parser.parse_args())

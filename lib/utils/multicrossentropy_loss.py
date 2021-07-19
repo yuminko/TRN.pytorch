@@ -16,7 +16,8 @@ class MultiCrossEntropyLoss(nn.Module):
         if self.ignore_index >= 0:
             notice_index = [i for i in range(target.shape[-1]) if i != self.ignore_index]
  
-            output = torch.sum(-target[:, notice_index] * logsoftmax(input[:, notice_index]), 1)
+            # output = torch.sum(-target[:, notice_index] * logsoftmax(input[:, notice_index]), 1)
+            output = torch.sum(-target[:,notice_index] * torch.log(input[:,notice_index]),1)
 
             return torch.mean(output[target[:, self.ignore_index] != 1])
         else:

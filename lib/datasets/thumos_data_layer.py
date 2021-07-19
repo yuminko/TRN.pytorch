@@ -3,8 +3,10 @@ import os.path as osp
 import torch
 import torch.utils.data as data
 import numpy as np
+import math
 
 import matplotlib.pyplot as plt
+
 
 class TRNTHUMOSDataLayer(data.Dataset):
     def __init__(self, args, phase='train'):
@@ -56,6 +58,15 @@ class TRNTHUMOSDataLayer(data.Dataset):
     def __len__(self):
         return len(self.inputs)
 
+
+def gaussian_kernel(k_size, sigma): 
+
+    arr = np.arange(math.trunc(k_size/2)*(-1), math.ceil(k_size/2)+1,1)
+    kernel_raw = np.exp((-arr*arr)/(2*sigma*sigma))
+    kernel = kernel_raw / kernel_raw.sum()
+    return kernel
+
+
 class LSTMTHUMOSDataLayer(data.Dataset):
     def __init__(self, args, phase='train'):
         self.data_root = args.data_root
@@ -67,8 +78,6 @@ class LSTMTHUMOSDataLayer(data.Dataset):
 
         self.inputs = []
 
-        window_size = 9
-
         for session in self.sessions:
             target = np.load(osp.join(self.data_root, 'target', session+'.npy'))
             seed = np.random.randint(self.enc_steps) if self.training else 0
@@ -76,22 +85,61 @@ class LSTMTHUMOSDataLayer(data.Dataset):
 
             ### smooth the original label
 
+            # for i in range(len(target[0])):
+            #     column = target[:,i]
+            #     stack = []
+            #     for j in range(len(column)):
+            #         if column[j] == 1:
+            #             smooth[j][i] = 1
+            #         else:
+            #             n = window_size // 2
+            #             if  j <= len(column)-1-n:
+            #                 stack_part = stack[-n:]
+            #                 summ = sum(stack_part)   
+            #                 for m in range(n+1):
+            #                     summ += column[j+m]
+            #                 new = summ / (len(stack_part) + 1 + n)
+            #                 smooth[j][i] = new
+            #             else:
+            #                 stack_part = stack[-n:]
+            #                 summ = sum(stack_part)  
+            #                 count = 0
+            #                 while j+count+1 != len(column):
+            #                     summ += column[j+count]
+            #                     count += 1
+            #                 new = summ / (len(stack) + count)
+            #                 smooth[j][i] = new
+            #         stack.append(column[j])
+
+
             for i in range(len(target[0])):
                 column = target[:,i]
-                stack = []
-
+                kernel = gaussian_kernel(5,3)
+                new = np.convolve(column, kernel ,'same')
+                smooth[:,i] = new
                 for j in range(len(column)):
-                    stack.append(column[j])
-                    stack = stack[-window_size:]
-                    new = sum(stack) / len(stack)
-                    smooth[j][i] = new
+                    if column[j] == 1:
+                        smooth[j][i] = 1
+ 
+
+           
+            # y1 = target[:,1][:100]
+            # y2 = smooth[:,1][:100]
+            # x = np.linspace(0,len(y1),len(y1))
+            # plt.plot(x,y1, color='red')
+            # plt.plot(x,y2, color='green')
+            # plt.savefig('/dataset/NAS2/CIPLAB/users/ymko/TRN.pytorch/windowsize20_gauss.png')
+            # asdf
+            
 
             ### regularize the smooth target
-            # for r in range(len(target[0])):
-            #     row = target[r]
-            #     summ = sum(row)
-            #     if summ != 1:
-            #         print(row)
+            for r in range(len(smooth[0])):
+                row = smooth[r]
+                summ = sum(row)
+                if summ != 1:
+                    # print(row)
+                    row = row / summ
+                    # print(row)
 
             # asdf
 
@@ -124,4 +172,6 @@ class LSTMTHUMOSDataLayer(data.Dataset):
 
     def __len__(self):
         return len(self.inputs)
+
+
 

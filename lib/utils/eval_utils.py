@@ -7,6 +7,10 @@ import numpy as np
 from sklearn.metrics import average_precision_score
 from sklearn.metrics import confusion_matrix
 
+
+import functools
+import sklearn
+
 __all__ = [
     'compute_result_multilabel',
     'compute_result',
@@ -48,6 +52,7 @@ def compute_result_multilabel(dataset, class_index, score_metrics, target_metric
     pred_metrics = np.argmax(score_metrics, axis=1)
     target_metrics = np.array(target_metrics)
 
+
     ###################################################################################################################
     # We follow (Shou et al., 2017) and adopt their per-frame evaluation method of THUMOS'14 datset.
     # Source: https://bitbucket.org/columbiadvmm/cdc/src/master/THUMOS14/eval/PreFrameLabeling/compute_framelevel_mAP.m
@@ -79,6 +84,7 @@ def compute_result_multilabel(dataset, class_index, score_metrics, target_metric
 
     if dataset == "THUMOS":
         print('Dataset: ', dataset)
+
         for cls in range(len(class_index)):
             if cls not in ignore_class:
                 result['AP'][class_index[cls]] = average_precision_score(

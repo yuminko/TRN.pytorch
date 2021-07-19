@@ -1,11 +1,13 @@
 from .generalized_trn import GeneralizedTRN
 from .lstm import baselineLSTM
 from .lstm_second import SecondLSTM
+from .lstm_delta import DeltaLSTM
 
 _META_ARCHITECTURES = {
     'TRN': GeneralizedTRN,
     'LSTM' : baselineLSTM,
-    'Second' : SecondLSTM
+    'Second' : SecondLSTM,
+    'Delta' : DeltaLSTM
 }
 
 def build_model(args):
